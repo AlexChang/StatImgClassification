@@ -4,6 +4,31 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.model_selection import cross_val_score
 import csv
 
+
+import utils
+
+def main():
+    (trainInput, trainTarget) = utils.getTrainData()
+    (testImgId, validTestData) = utils.getTestData()
+
+    clf = svm.SVC(kernel='linear', C=1)
+    print('Training...')
+    clf.fit(trainInput, trainTarget.ravel())
+    print('Training complete!')
+
+    print('Predicting...')
+    predictionResult = clf.predict(validTestData)
+    predictionResult = np.expand_dims(predictionResult, axis=1)
+    print('Prediction complete!')
+
+    result = utils.concatenateResult(testImgId, predictionResult)
+
+    utils.saveResult(result, 'svm')
+
+if __name__ == '__main__':
+    main()
+
+'''
 ### train data
 rawData = np.loadtxt('data/train.csv', skiprows=1, delimiter=',')
 validData = rawData[:, 1:]
@@ -43,3 +68,4 @@ csvWriter.writerow(header)
 for item in result:
     csvWriter.writerow(item)
 out.close()
+'''
