@@ -11,7 +11,7 @@ def main():
     (trainInput, trainTarget) = utils.getTrainData()
     (testImgId, validTestData) = utils.getTestData()
 
-    clf = svm.SVC(kernel='linear', C=1)
+    clf = svm.SVC(C=1, decision_function_shape='ovo', class_weight='balanced', verbose=True)
     print('Training...')
     clf.fit(trainInput, trainTarget.ravel())
     print('Training complete!')
@@ -23,7 +23,7 @@ def main():
 
     result = utils.concatenateResult(testImgId, predictionResult)
 
-    utils.saveResult(result, 'svm')
+    utils.saveResult(result, 'svm_ovo_b')
 
 if __name__ == '__main__':
     main()
