@@ -1,32 +1,16 @@
-import numpy as np
 from sklearn import svm
-from sklearn.model_selection import ShuffleSplit
-from sklearn.model_selection import cross_val_score
-import csv
 
+from parameter import Parameter
 
-import utils
+class SVMParameter(Parameter):
 
-def main():
-    (trainInput, trainTarget) = utils.getTrainData()
-    (testImgId, validTestData) = utils.getTestData()
+    def __init__(self):
+        super(SVMParameter, self).__init__()
 
-    clf = svm.SVC(C=1, decision_function_shape='ovo', class_weight='balanced', verbose=True)
-    print('Training...')
-    clf.fit(trainInput, trainTarget.ravel())
-    print('Training complete!')
+def getModel(parameterDict):
+    clf = svm.SVC(**parameterDict)
+    return clf
 
-    print('Predicting...')
-    predictionResult = clf.predict(validTestData)
-    predictionResult = np.expand_dims(predictionResult, axis=1)
-    print('Prediction complete!')
-
-    result = utils.concatenateResult(testImgId, predictionResult)
-
-    utils.saveResult(result, 'svm_ovo_b')
-
-if __name__ == '__main__':
-    main()
 
 '''
 ### train data
@@ -40,12 +24,12 @@ clf = svm.SVC(kernel='linear', C=1.1)
 
 ### cv
 cv = ShuffleSplit(n_splits=3, test_size=0.3)
-scores = cross_val_score(clf, data, target.ravel(), cv=cv)
+scores = cross_val_score(clf, data, target, cv=cv)
 print(scores)
 print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 ### fit
-clf.fit(data, target.ravel())
+clf.fit(data, target)
 
 ### test data
 testRawData = np.loadtxt('data/test.csv', skiprows=1, delimiter=',')

@@ -1,55 +1,78 @@
-import parameters
+import parameter
 import numpy as np
 import csv
 import datetime
 
-## (trainInput, trainOutput)
-## ([sample x feature], [sample x 1])
+dataFolder = "data/"
+trainDataFileName = "train.csv"
+testDataFileName = "test.csv"
+
+resultFolder = "result/"
+
+resultHeader = ['id', 'categories']
+
+trainDataPath = dataFolder + trainDataFileName
+testDataPath = dataFolder + testDataFileName
+
 def getTrainData():
-    print("Reading training data from: '{}'...".format(parameters.trainDataPath))
-    rawTrainData = np.loadtxt(parameters.trainDataPath, skiprows=1, delimiter=',')
+    """
+    :return: (trainInput, trainOutput): tuple of train input and target
+            with shape ([n_samples, n_features], [n_samples])
+    """
+    print("Reading training data from: '{}'...".format(trainDataPath))
+    rawTrainData = np.loadtxt(trainDataPath, skiprows=1, delimiter=',')
     validTrainData = rawTrainData[:, 1:]
     trainInput, trainTarget = np.split(validTrainData, (validTrainData.shape[1] - 1, ), axis=1)
+    trainTarget = trainTarget.ravel().astype(int)
     print("Read complete!")
     print("Shape of training data: input: {}, target: {}".format(trainInput.shape, trainTarget.shape))
     return (trainInput, trainTarget)
 
 
-## (testImgId, validTestData)
-## ([sample x 1], [sample x feature])
 def getTestData():
-    print("Reading test data from: '{}'...".format(parameters.testDataPath))
-    rawTestData = np.loadtxt(parameters.testDataPath, skiprows=1, delimiter=',')
-    testImgId = rawTestData[:, :1]
+    """
+    :return: (testImgId, validTestData): tuple of test image Id and data
+            with shape ([n_samples, 1], [n_samples, n_features])
+    """
+    print("Reading test data from: '{}'...".format(testDataPath))
+    rawTestData = np.loadtxt(testDataPath, skiprows=1, delimiter=',')
+    testImgId = rawTestData[:, :1].astype(int)
     validTestData = rawTestData[:, 1:]
     print("Read complete!")
     print("Shape of test data: imgId: {}, input: {}".format(testImgId.shape, validTestData.shape))
     return (testImgId, validTestData)
 
-## input
-## (testImgId, predictionResult)
-## ([sample x 1], [sample x 1])
-##  output
-## result
-## [sample x 2]
+
 def concatenateResult(testImgId, predictionResult):
+    """
+    :param testImgId: np array with shape [n_samples, 1]
+    :param predictionResult: np array with shape [n_samples, 1]
+    :return: result: np array with shape [n_samples, 2]
+    """
     result = np.concatenate((testImgId, predictionResult), axis=1)
     result = result.astype(int)
     return result
 
-## input
-## (result, method='', outputFileName='')
-## ([sample x 2], ...)
-def saveResult(result, method='', outputFileName=''):
-    header = parameters.resultHeader
+
+def saveResult(result, method='', parameters='', outputFileName=''):
+    """
+    :param result: np array with shape [n_samples, 2]
+    :param method: string (default = '')
+    :param parameters: string (default = '')
+    :param outputFileName: string (default = '')
+    :return:
+    """
+    header = resultHeader
     timeSuffix = datetime.datetime.now().strftime("%b%d%H%M")
     if outputFileName == '':
         if method != '':
             outputFileName += method + '_'
+        if parameters != '':
+            outputFileName += parameters
         outputFileName += timeSuffix
     if not outputFileName.endswith('.csv'):
         outputFileName += '.csv'
-    outputFilePath = parameters.resultFolder + outputFileName
+    outputFilePath = resultFolder + outputFileName
     print("Saving result to : '{}'...".format(outputFilePath))
     f = open(outputFilePath, 'w', newline='')
     csvWriter = csv.writer(f)
