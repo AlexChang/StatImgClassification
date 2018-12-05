@@ -1,9 +1,23 @@
 import numpy as np
+import datetime
+import argparse
+import glob
 
 import svm
 import linear_svm
 import knn
+from parameter import Parameter
 import utils
+
+supportedMethods = ['svm', 'lin_svm', 'knn']
+
+def initArgParser():
+    parser = argparse.ArgumentParser(description='Image Classifier')
+    parser.add_argument('--mode', type=str, default='knn')
+    parser.add_argument('--bp', action='store_true', default=False)
+    parser.add_argument('--test', action='store_true', default=False)
+    args = parser.parse_args()
+    return args
 
 def train(clf, trainInput, trainTarget):
     print('Training...')
@@ -18,33 +32,76 @@ def predict(clf, validTestData):
     print('Prediction complete!')
     return predictionResult
 
-def classify(method):
+def classify(args, method):
+    # get timestamp
+    timestamp = datetime.datetime.now().strftime("%b%d%H%M")
+
+    # read train & test data
     (trainInput, trainTarget) = utils.getTrainData()
     (testImgId, validTestData) = utils.getTestData()
 
+    # choose method
     method = method.lower()
-    if method == 'knn':
-        parameter = knn.KNNParameter()
-        parameter.addParameter('weights', 'uniform')
-        clf = knn.getModel(parameter.parameterDict)
-    elif method == 'svm':
-        parameter = svm.SVMParameter()
-        parameter.addParameter('multi_class', 'ovr')
-        clf = svm.getModel(parameter.parameterDict)
-    elif method == 'linear_svm':
-        parameter = linear_svm.LINEARSVMParameter()
-        clf = linear_svm.getModel(parameter.parameterDict)
-    else:
-        raise ValueError("unrecognized classification method: '%s'" % method)
+    parameter = Parameter(method)
+    if args.bp:
+        parameter.loadBestParameter()
 
+    # get classifier
+    if method == 'svm':
+        if not args.bp:
+            #parameterDict = {'kernel': 'linear', 'decision_function_shape': 'ovr'}
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = svm.getModel(parameter.parameterDict)
+    elif method == 'lin_svm':
+        if not args.bp:
+            # parameter.addParameter('multi_class', 'ovr')
+            # parameter.addParameter('loss', 'l2')
+            parameter.addParameter('penalty', 'l1')
+            parameter.addParameter('dual', False)
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = linear_svm.getModel(parameter.parameterDict)
+    elif method == 'knn':
+        if not args.bp:
+            #parameter.addParameter('n_neighbors', 15)
+            #parameter.addParameter('weights', 'distance')
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = knn.getModel(parameter.parameterDict)
+    else:
+        raise ValueError("unsupported classification method: {}".format(method))
+
+    # save parameters
+    parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter.toString(),
+                                                     timestamp=timestamp)
+    utils.saveParameters(clf, outputFileName=parameterFileName)
+
+    # train & predict
     clf = train(clf, trainInput, trainTarget)
     predictionResult = predict(clf, validTestData)
 
+    # save result
     result = utils.concatenateResult(testImgId, predictionResult)
-    utils.saveResult(result, method, parameter.toString())
+    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter.toString(),
+                                                  timestamp=timestamp)
+    utils.saveResult(result, outputFileName=resultFileName)
+
 
 def main():
-    classify('linear_svm')
+    args = initArgParser()
+    method = args.mode.lower()
+    if not args.test:
+        if method == 'all':
+            for method in supportedMethods:
+                classify(args, method)
+                print()
+        elif not method in supportedMethods:
+            raise ValueError("unsupported classification method: {}".format(method))
+        else:
+            classify(args, method)
+    else:
+        utils.getBestParameters('lin_svm')
 
 if __name__ == '__main__':
     main()

@@ -1,12 +1,5 @@
 from sklearn import svm
 
-from parameter import Parameter
-
-class SVMParameter(Parameter):
-
-    def __init__(self):
-        super(SVMParameter, self).__init__()
-
 def getModel(parameterDict):
     clf = svm.SVC(**parameterDict)
     return clf
