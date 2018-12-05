@@ -1,0 +1,1 @@
+{"solver": "svd", "shrinkage": null, "priors": null, "n_components": null, "store_covariance": false, "tol": 0.0001}

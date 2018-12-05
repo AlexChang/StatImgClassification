@@ -6,14 +6,16 @@ import glob
 import svm
 import linear_svm
 import knn
+import lda
+import qda
 from parameter import Parameter
 import utils
 
-supportedMethods = ['svm', 'lin_svm', 'knn']
+supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='knn')
+    parser.add_argument('--mode', type=str, default='qda')
     parser.add_argument('--bp', action='store_true', default=False)
     parser.add_argument('--test', action='store_true', default=False)
     args = parser.parse_args()
@@ -69,6 +71,16 @@ def classify(args, method):
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
         clf = knn.getModel(parameter.parameterDict)
+    elif method == 'lda':
+        if not args.bp:
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = lda.getModel(parameter.parameterDict)
+    elif method == 'qda':
+        if not args.bp:
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = qda.getModel(parameter.parameterDict)
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 
