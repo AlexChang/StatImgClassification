@@ -1,0 +1,1 @@
+{"base_estimator": null, "n_estimators": 50, "estimator_params": [], "learning_rate": 1.0, "random_state": null, "algorithm": "SAMME.R"}

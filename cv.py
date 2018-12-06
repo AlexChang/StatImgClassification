@@ -2,14 +2,19 @@ import numpy as np
 import datetime
 import argparse
 import glob
+from sklearn.model_selection import cross_val_score
+
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report
+
 
 import svm
 import linear_svm
 import knn
 import lda
 import qda
-import rf
-import adaboost
 from parameter import Parameter
 import utils
 
@@ -17,7 +22,7 @@ supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='rf')
+    parser.add_argument('--mode', type=str, default='qda')
     parser.add_argument('--bp', action='store_true', default=False)
     parser.add_argument('--test', action='store_true', default=False)
     args = parser.parse_args()
@@ -36,13 +41,41 @@ def predict(clf, validTestData):
     print('Prediction complete!')
     return predictionResult
 
-def classify(args, method):
+def cv(args, method):
     # get timestamp
     timestamp = datetime.datetime.now().strftime("%b%d%H%M")
 
-    # read train & test data
+    # read train
     (trainInput, trainTarget) = utils.getTrainData()
-    (testImgId, validTestData) = utils.getTestData()
+
+    tuned_parameters = [{'penalty': ['l1', 'l2'], 'loss': ['hinge', 'squared_hinge'],
+                         'C': [1, 10, 100, 1000], 'tol': [1e-3, 1e-4, 1e-5], 'max_iter': 5000}]
+
+    cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=9)
+    scores = cross_val_score(clf, trainInput, trainTarget, cv=cv)
+    print(scores)
+    print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+    score = 'precision'
+    print("# Tuning hyper-parameters for %s" % score)
+    print()
+
+    clf = GridSearchCV(SVC(), tuned_parameters, cv=5,
+                       scoring='%s_macro' % score)
+    clf.fit(X_train, y_train)
+
+    print("Best parameters set found on development set:")
+    print()
+    print(clf.best_params_)
+    print()
+    print("Grid scores on development set:")
+    print()
+    means = clf.cv_results_['mean_test_score']
+    stds = clf.cv_results_['std_test_score']
+    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+        print("%0.3f (+/-%0.03f) for %r"
+              % (mean, std * 2, params))
+    print()
 
     # choose method
     method = method.lower()
@@ -83,16 +116,6 @@ def classify(args, method):
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
         clf = qda.getModel(parameter.parameterDict)
-    elif method == 'rf':
-        if not args.bp:
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = rf.getModel(parameterDict)
-    elif method == 'ada':
-        if not args.bp:
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = adaboost.getModel(parameterDict)
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 

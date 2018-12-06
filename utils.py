@@ -109,7 +109,7 @@ def saveParameters(clf, outputFileName):
     outputFilePath = parameterFoler + outputFileName
     print("Saving parameters to : '{}'...".format(outputFilePath))
     f = open(outputFilePath, 'w')
-    json.dump(clf.__dict__, f)
+    json.dump(clf.get_params(), f)
     f.close()
     print("Save complete!")
 
