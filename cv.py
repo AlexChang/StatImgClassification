@@ -1,38 +1,34 @@
 import numpy as np
 import datetime
 import argparse
-import glob
-from sklearn.model_selection import cross_val_score
 
+
+from sklearn import datasets
 from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report
 
 
-import svm
-import linear_svm
-import knn
-import lda
-import qda
-from parameter import Parameter
+import model.svm as svm
+import model.linear_svm as linear_svm
+import model.knn as knn
+import model.lda as lda
+import model.qda as qda
+import model.rf as rf
+import model.adaboost as adaboost
 import utils
 
 supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='qda')
-    parser.add_argument('--bp', action='store_true', default=False)
-    parser.add_argument('--test', action='store_true', default=False)
+    parser.add_argument('--mode', type=str, default='lin_svm')
+    parser.add_argument('--best', action='store_true', default=True, help='')
+    parser.add_argument('--tm', action='store_true', default=True, help='test model')
+    parser.add_argument('--tp', action='store_true', default=True, help='test parameters')
+    parser.add_argument('--sd', action='store_true', default=True, help='sample data set')
+    parser.add_argument('--job', type=int, default=2)
     args = parser.parse_args()
     return args
-
-def train(clf, trainInput, trainTarget):
-    print('Training...')
-    clf.fit(trainInput, trainTarget)
-    print('Training complete!')
-    return clf
 
 def predict(clf, validTestData):
     print('Predicting...')
@@ -41,114 +37,111 @@ def predict(clf, validTestData):
     print('Prediction complete!')
     return predictionResult
 
-def cv(args, method):
+def cv(args, method, isPredict=True):
     # get timestamp
     timestamp = datetime.datetime.now().strftime("%b%d%H%M")
 
-    # read train
-    (trainInput, trainTarget) = utils.getTrainData()
+    # read training data
+    if args.sd:
+        # use sample data set
+        print("Using sample data set: iris!")
+        iris = datasets.load_iris()
+        (trainInput, trainTarget) = iris.data, iris.target
+        print("Shape of training data: input: {}, target: {}".format(trainInput.shape, trainTarget.shape))
+    else:
+        (trainInput, trainTarget) = utils.loadTrainData()
 
-    tuned_parameters = [{'penalty': ['l1', 'l2'], 'loss': ['hinge', 'squared_hinge'],
-                         'C': [1, 10, 100, 1000], 'tol': [1e-3, 1e-4, 1e-5], 'max_iter': 5000}]
-
-    cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=9)
-    scores = cross_val_score(clf, trainInput, trainTarget, cv=cv)
-    print(scores)
-    print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
-
-    score = 'precision'
-    print("# Tuning hyper-parameters for %s" % score)
-    print()
-
-    clf = GridSearchCV(SVC(), tuned_parameters, cv=5,
-                       scoring='%s_macro' % score)
-    clf.fit(X_train, y_train)
-
-    print("Best parameters set found on development set:")
-    print()
-    print(clf.best_params_)
-    print()
-    print("Grid scores on development set:")
-    print()
-    means = clf.cv_results_['mean_test_score']
-    stds = clf.cv_results_['std_test_score']
-    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-        print("%0.3f (+/-%0.03f) for %r"
-              % (mean, std * 2, params))
-    print()
-
-    # choose method
-    method = method.lower()
-    parameter = Parameter(method)
-    if args.bp:
-        parameter.loadBestParameter()
-
-    # get classifier
+    # get classifier and param_grid
     if method == 'svm':
-        if not args.bp:
-            #parameterDict = {'kernel': 'linear', 'decision_function_shape': 'ovr'}
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = svm.getModel(parameter.parameterDict)
+        param_grid = svm.param_grid
+        clf = svm.getModel()
     elif method == 'lin_svm':
-        if not args.bp:
-            # parameter.addParameter('multi_class', 'ovr')
-            # parameter.addParameter('loss', 'l2')
-            parameter.addParameter('penalty', 'l1')
-            parameter.addParameter('dual', False)
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = linear_svm.getModel(parameter.parameterDict)
+        param_grid = linear_svm.param_grid
+        clf = linear_svm.getModel()
     elif method == 'knn':
-        if not args.bp:
-            #parameter.addParameter('n_neighbors', 15)
-            #parameter.addParameter('weights', 'distance')
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = knn.getModel(parameter.parameterDict)
+        param_grid = knn.param_grid
+        clf = knn.getModel()
     elif method == 'lda':
-        if not args.bp:
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = lda.getModel(parameter.parameterDict)
+        param_grid = lda.param_grid
+        clf = lda.getModel()
     elif method == 'qda':
-        if not args.bp:
-            parameterDict = {}
-            parameter.addParametersByDict(parameterDict)
-        clf = qda.getModel(parameter.parameterDict)
+        param_grid = qda.param_grid
+        clf = qda.getModel()
+    elif method == 'rf':
+        param_grid = rf.param_grid
+        clf = rf.getModel()
+    elif method == 'ada':
+        param_grid = adaboost.param_grid
+        clf = adaboost.getModel()
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 
-    # save parameters
-    parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter.toString(),
-                                                     timestamp=timestamp)
-    utils.saveParameters(clf, outputFileName=parameterFileName)
+    # set cv and scores
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=9)
+    #scores = ['accuracy', 'precision_macro', 'precision_macro_micro']
+    scores = ['accuracy']
 
-    # train & predict
-    clf = train(clf, trainInput, trainTarget)
-    predictionResult = predict(clf, validTestData)
+    # cv
+    for score in scores:
+        print("# Tuning hyper-parameters for {}".format(score))
+        print()
 
-    # save result
-    result = utils.concatenateResult(testImgId, predictionResult)
-    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter.toString(),
-                                                  timestamp=timestamp)
-    utils.saveResult(result, outputFileName=resultFileName)
+        clf = GridSearchCV(clf, param_grid, cv=cv, scoring=score, n_jobs=args.job)
+        clf.fit(trainInput, trainTarget)
 
+        scoreResult = utils.getScoreResult(clf)
+        print(scoreResult)
+
+        # save best parameter
+        bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp, isBest=True)
+        utils.saveParameters(clf.best_params_, bestParameterFileName)
+
+        # save cv grid scores
+        scoreFileName = utils.generateOutputFileName('txt', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp)
+        utils.saveScores(scoreResult, scoreFileName)
+
+        # save best model
+        bestModelFileName = utils.generateOutputFileName('joblib', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp, isBest=True)
+        utils.saveModel(clf, bestModelFileName)
+
+        if isPredict:
+            if args.sd:
+                print("Ignore prediction operation since using sample data set: iris! ")
+            else:
+                # read test data
+                (testImgId, validTestData) = utils.loadTestData()
+                predictionResult = predict(clf, validTestData)
+
+                # save result
+                result = utils.concatenateResult(testImgId, predictionResult)
+                resultFileName = utils.generateOutputFileName('csv', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp, isBest=True)
+                utils.saveResult(result, outputFileName=resultFileName)
+
+
+def testModel(args, method, modelFileName='', isCV=True):
+    if args.best:
+        clf = utils.loadBestModel(method, isCV=isCV)
+    else:
+        clf = utils.loadModel(modelFileName)
+    print(clf)
+
+def testParameter(args, method, parameterFileName='', isCV=True):
+    if args.best:
+        parameterDict = utils.loadBestParameters(method, isCV=isCV)
+    else:
+        parameterDict = utils.loadParameters(parameterFileName)
+    print(parameterDict)
 
 def main():
     args = initArgParser()
     method = args.mode.lower()
-    if not args.test:
-        if method == 'all':
-            for method in supportedMethods:
-                classify(args, method)
-                print()
-        elif not method in supportedMethods:
-            raise ValueError("unsupported classification method: {}".format(method))
-        else:
-            classify(args, method)
-    else:
-        utils.getBestParameters('lin_svm')
+    if args.tm:
+        testModel(args, method)
+    if args.tp:
+        testParameter(args, method)
+    if not (args.tm or args.tp):
+        cv(args, method)
+
 
 if __name__ == '__main__':
     main()

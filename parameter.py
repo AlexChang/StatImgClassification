@@ -22,4 +22,6 @@ class Parameter(object):
             parameterString += str(k) + '=' + str(v) + '_'
             if len(parameterString) > 100:
                 break
+        if parameterString.endswith('_'):
+            parameterString = parameterString[:-1]
         return parameterString
