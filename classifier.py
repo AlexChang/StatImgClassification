@@ -1,15 +1,15 @@
 import numpy as np
 import datetime
 import argparse
-import glob
 
-import svm
-import linear_svm
-import knn
-import lda
-import qda
-import rf
-import adaboost
+
+import model.svm as svm
+import model.linear_svm as linear_svm
+import model.knn as knn
+import model.lda as lda
+import model.qda as qda
+import model.rf as rf
+import model.adaboost as adaboost
 from parameter import Parameter
 import utils
 
@@ -40,9 +40,9 @@ def classify(args, method):
     # get timestamp
     timestamp = datetime.datetime.now().strftime("%b%d%H%M")
 
-    # read train & test data
-    (trainInput, trainTarget) = utils.getTrainData()
-    (testImgId, validTestData) = utils.getTestData()
+    # read training & test data
+    (trainInput, trainTarget) = utils.loadTrainData()
+    (testImgId, validTestData) = utils.loadTestData()
 
     # choose method
     method = method.lower()
@@ -87,12 +87,12 @@ def classify(args, method):
         if not args.bp:
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
-        clf = rf.getModel(parameterDict)
+        clf = rf.getModel(parameter.parameterDict)
     elif method == 'ada':
         if not args.bp:
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
-        clf = adaboost.getModel(parameterDict)
+        clf = adaboost.getModel(parameter.parameterDict)
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 
@@ -125,7 +125,7 @@ def main():
         else:
             classify(args, method)
     else:
-        utils.getBestParameters('lin_svm')
+        utils.loadBestParameters('lin_svm')
 
 if __name__ == '__main__':
     main()

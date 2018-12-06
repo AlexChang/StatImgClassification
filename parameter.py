@@ -13,7 +13,7 @@ class Parameter(object):
         self.parameterDict.update(parameterDict)
 
     def loadBestParameter(self):
-        parameterDict = utils.getBestParameters(self.method)
+        parameterDict = utils.loadBestParameters(self.method)
         self.addParametersByDict(parameterDict)
 
     def toString(self):
