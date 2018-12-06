@@ -17,7 +17,7 @@ supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='rf')
+    parser.add_argument('--mode', type=str, default='lin_svm')
     parser.add_argument('--bp', action='store_true', default=False)
     parser.add_argument('--test', action='store_true', default=False)
     args = parser.parse_args()
@@ -59,10 +59,12 @@ def classify(args, method):
         clf = svm.getModel(parameter.parameterDict)
     elif method == 'lin_svm':
         if not args.bp:
-            # parameter.addParameter('multi_class', 'ovr')
-            # parameter.addParameter('loss', 'l2')
-            parameter.addParameter('penalty', 'l1')
-            parameter.addParameter('dual', False)
+            #parameter.addParameter('multi_class', 'ovr')
+            #parameter.addParameter('loss', 'l2')
+            #parameter.addParameter('penalty', 'l1')
+            #parameter.addParameter('dual', False)
+            parameter.addParameter('C', 10)
+            parameter.addParameter('max_iter', 10000)
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
         clf = linear_svm.getModel(parameter.parameterDict)
@@ -99,7 +101,7 @@ def classify(args, method):
     # save parameters
     parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter.toString(),
                                                      timestamp=timestamp)
-    utils.saveParameters(clf, outputFileName=parameterFileName)
+    utils.saveParameters(clf.get_params(), outputFileName=parameterFileName)
 
     # train & predict
     clf = train(clf, trainInput, trainTarget)

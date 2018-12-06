@@ -21,11 +21,11 @@ supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lin_svm')
-    parser.add_argument('--best', action='store_true', default=True, help='')
-    parser.add_argument('--tm', action='store_true', default=True, help='test model')
-    parser.add_argument('--tp', action='store_true', default=True, help='test parameters')
-    parser.add_argument('--sd', action='store_true', default=True, help='sample data set')
+    parser.add_argument('--mode', type=str, default='knn')
+    parser.add_argument('--best', action='store_true', default=False, help='')
+    parser.add_argument('--tm', action='store_true', default=False, help='test model')
+    parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
+    parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
     parser.add_argument('--job', type=int, default=2)
     args = parser.parse_args()
     return args
