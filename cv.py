@@ -16,13 +16,15 @@ import model.qda as qda
 import model.rf as rf
 import model.adaboost as adaboost
 import model.lr as lr
+import model.rc as rc
 import utils
 
-supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr']
+#supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr']
+supportedMethods = ['lin_svm', 'knn', 'lda', 'lr', 'rc']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lr')
+    parser.add_argument('--mode', type=str, default='lda')
     parser.add_argument('--best', action='store_true', default=False, help='')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
     parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
@@ -77,6 +79,9 @@ def cv(args, method, isPredict=True):
     elif method == 'lr':
         param_grid = lr.param_grid
         clf = lr.getModel()
+    elif method == 'rc':
+        param_grid = rc.param_grid
+        clf = rc.getModel()
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 
