@@ -63,8 +63,8 @@ def classify(args, method):
             #parameter.addParameter('loss', 'l2')
             #parameter.addParameter('penalty', 'l1')
             #parameter.addParameter('dual', False)
-            parameter.addParameter('C', 10)
-            parameter.addParameter('max_iter', 10000)
+            #parameter.addParameter('C', 10)
+            #parameter.addParameter('max_iter', 10000)
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
         clf = linear_svm.getModel(parameter.parameterDict)

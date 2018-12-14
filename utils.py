@@ -16,7 +16,7 @@ scoreFolder = "score/"
 
 # data files
 trainDataFileName = "train.csv"
-testDataFileName = "test.csv"
+testDataFileName = "test_2.csv"
 trainDataPath = dataFolder + trainDataFileName
 testDataPath = dataFolder + testDataFileName
 
