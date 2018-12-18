@@ -26,14 +26,15 @@ supportedMethods = ['lin_svm', 'knn', 'lda', 'lr', 'rc']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lda')
-    parser.add_argument('--best', action='store_true', default=False, help='')
-    parser.add_argument('--pca', action='store_true', default=False, help='')
+    parser.add_argument('--mode', type=str, default='lr')
+    parser.add_argument('--pca', action='store_true', default=False, help='pca')
     parser.add_argument('--gs', action='store_true', default=False, help='grid search')
-    parser.add_argument('--predict', action='store_true', default=True, help='predict on test set')
+    parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
+    parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
     parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
     parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
+    parser.add_argument('--sm', action='store_false', default=True, help='NOT store model')
     parser.add_argument('--job', type=int, default=2)
     args = parser.parse_args()
     return args
@@ -127,9 +128,10 @@ def cv(args, method, isPredict=True):
                                                          timestamp=timestamp)
             utils.saveScores(scoreResult, scoreFileName)
             # save best model
-            bestModelFileName = utils.generateOutputFileName('joblib', method=method, parameters=parameter,
-                                                             timestamp=timestamp, isBest=True)
-            utils.saveModel(clf, bestModelFileName)
+            if args.sm:
+                bestModelFileName = utils.generateOutputFileName('joblib', method=method, parameters=parameter,
+                                                                 timestamp=timestamp, isBest=True)
+                utils.saveModel(clf, bestModelFileName)
         else:
             cvs = cross_val_score(clf, trainInput, cv=cv, scoring=score, n_jobs=args.job)
             scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
@@ -144,9 +146,10 @@ def cv(args, method, isPredict=True):
                                                          timestamp=timestamp)
             utils.saveScores(scoreResult, scoreFileName)
             # save model
-            modelFileName = utils.generateOutputFileName('joblib', method=method, parameters=parameter,
-                                                             timestamp=timestamp, isBest=True)
-            utils.saveModel(clf, modelFileName)
+            if args.sm:
+                modelFileName = utils.generateOutputFileName('joblib', method=method, parameters=parameter,
+                                                                 timestamp=timestamp, isBest=True)
+                utils.saveModel(clf, modelFileName)
 
         if args.predict:
             if args.sd:
@@ -163,9 +166,11 @@ def cv(args, method, isPredict=True):
                 # save result
                 result = utils.concatenateResult(testImgId, predictionResult)
                 if args.gd:
-                    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter, timestamp=timestamp, isBest=True)
+                    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter,
+                                                                  timestamp=timestamp, isBest=True)
                 else:
-                    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter, timestamp=timestamp)
+                    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter,
+                                                                  timestamp=timestamp)
                 utils.saveResult(result, outputFileName=resultFileName)
 
 
