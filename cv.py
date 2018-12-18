@@ -28,6 +28,7 @@ def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
     parser.add_argument('--mode', type=str, default='lr')
     parser.add_argument('--pca', action='store_true', default=False, help='pca')
+    parser.add_argument('--dim', type=int, default=1289, help='pca dim')
     parser.add_argument('--gs', action='store_true', default=False, help='grid search')
     parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
     parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
@@ -39,6 +40,7 @@ def initArgParser():
     args = parser.parse_args()
     return args
 
+
 def predict(clf, validTestData):
     print('Predicting...')
     predictionResult = clf.predict(validTestData)
@@ -46,8 +48,10 @@ def predict(clf, validTestData):
     print('Prediction complete!')
     return predictionResult
 
-def fitPCA(trainInput):
-    pca = PCA(svd_solver='full', n_components='mle')
+
+def fitPCA(trainInput, dim=1289):
+    #pca = PCA(svd_solver='full', n_components='mle')
+    pca = PCA(n_components=dim)
     print("PCA fitting with parameters: {}".format(pca.get_params()))
     pca.fit(trainInput)
     print('Fit complete!')
@@ -70,7 +74,7 @@ def cv(args, method):
 
     # pca
     if args.pca:
-        pca = fitPCA(trainInput)
+        pca = fitPCA(trainInput, args.dim)
         trainInput = pca.transform(trainInput)
 
     # get classifier and param_grid

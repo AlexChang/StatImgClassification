@@ -13,6 +13,7 @@ modelFolder = "model/"
 parameterFolder = "parameter/"
 savedModelFolder = "savedModel/"
 scoreFolder = "score/"
+graphFolder = "graph/"
 
 # data files
 trainDataFileName = "train.csv"
