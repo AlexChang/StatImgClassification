@@ -1,7 +1,7 @@
 import numpy as np
 import datetime
 import argparse
-
+from sklearn.decomposition import PCA, FactorAnalysis
 
 import model.svm as svm
 import model.linear_svm as linear_svm
@@ -10,14 +10,16 @@ import model.lda as lda
 import model.qda as qda
 import model.rf as rf
 import model.adaboost as adaboost
+import model.lr as lr
+import model.rc as rc
 from parameter import Parameter
 import utils
 
-supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada']
+supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr', 'rc']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lin_svm')
+    parser.add_argument('--mode', type=str, default='lr')
     parser.add_argument('--bp', action='store_true', default=False)
     parser.add_argument('--test', action='store_true', default=False)
     args = parser.parse_args()
@@ -43,6 +45,11 @@ def classify(args, method):
     # read training & test data
     (trainInput, trainTarget) = utils.loadTrainData()
     (testImgId, validTestData) = utils.loadTestData()
+
+    pca = PCA(svd_solver='full', n_components='mle')
+    pca.fit(trainInput)
+    trainInput = pca.transform(trainInput)
+    validTestData = pca.transform(validTestData)
 
     # choose method
     method = method.lower()
@@ -95,6 +102,16 @@ def classify(args, method):
             parameterDict = {}
             parameter.addParametersByDict(parameterDict)
         clf = adaboost.getModel(parameter.parameterDict)
+    elif method == 'lr':
+        if not args.bp:
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = lr.getModel(parameter.parameterDict)
+    elif method == 'rc':
+        if not args.bp:
+            parameterDict = {}
+            parameter.addParametersByDict(parameterDict)
+        clf = rc.getModel(parameter.parameterDict)
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 

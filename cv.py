@@ -19,7 +19,7 @@ import model.lr as lr
 import model.rc as rc
 import utils
 
-#supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr']
+#supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr', 'rc']
 supportedMethods = ['lin_svm', 'knn', 'lda', 'lr', 'rc']
 
 def initArgParser():
