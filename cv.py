@@ -35,7 +35,7 @@ def initArgParser():
     parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
     parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
     parser.add_argument('--sm', action='store_false', default=True, help='NOT store model')
-    parser.add_argument('--job', type=int, default=2)
+    parser.add_argument('--job', type=int, default=4)
     args = parser.parse_args()
     return args
 
@@ -54,7 +54,7 @@ def fitPCA(trainInput):
     return pca
 
 
-def cv(args, method, isPredict=True):
+def cv(args, method):
     # get timestamp
     timestamp = datetime.datetime.now().strftime("%b%d%H%M")
 
@@ -111,14 +111,13 @@ def cv(args, method, isPredict=True):
 
     # cv
     for score in scores:
-        print("# Tuning hyper-parameters for {}".format(score))
-
         if args.gs:
+            print("# Tuning hyper-parameters for {}".format(score))
             clf = GridSearchCV(clf, param_grid, cv=cv, scoring=score, n_jobs=args.job)
             clf.fit(trainInput, trainTarget)
             scoreResult = utils.getGridSearchScoreResult(clf)
             print(scoreResult)
-            parameter = "CVGridSearch_score={}'.format(score)"
+            parameter = 'CVGridSearch_score={}'.format(score)
             # save best parameter
             bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=True)
@@ -133,10 +132,11 @@ def cv(args, method, isPredict=True):
                                                                  timestamp=timestamp, isBest=True)
                 utils.saveModel(clf, bestModelFileName)
         else:
-            cvs = cross_val_score(clf, trainInput, cv=cv, scoring=score, n_jobs=args.job)
+            print("# Cross Validation for {}".format(score))
+            cvs = cross_val_score(clf, trainInput, trainTarget, cv=cv, scoring=score, n_jobs=args.job)
             scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
             print(scoreResult)
-            parameter = "CV_score={}'.format(score)"
+            parameter = 'CV_score={}'.format(score)
             # save parameter
             parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=False)

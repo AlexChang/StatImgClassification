@@ -214,8 +214,8 @@ def getGridSearchScoreResult(clf):
 
 
 def getCVScoreResult(cvs, params):
-    scoreResult = "CV score with params: {}\n".format(str(params))
-    scoreResult += "{:.5f} (+/-{:.5f})\n".format(cvs.mean(), cvs.std() * 2)
+    scoreResult = "Params: {}".format(str(params))
+    scoreResult += "CV score: {:.5f} (+/-{:.5f})\n".format(cvs.mean(), cvs.std() * 2)
     return scoreResult
 
 

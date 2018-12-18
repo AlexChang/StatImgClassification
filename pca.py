@@ -7,9 +7,9 @@ from sklearn.decomposition import PCA, FactorAnalysis
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
 
-def fitPCA(trainInput):
-    pca = PCA(svd_solver='full', n_components='mle')
-    pca = PCA(n_components=1289)
+def fitPCA(trainInput, dim=1289):
+    #pca = PCA(svd_solver='full', n_components='mle')
+    pca = PCA(n_components=dim)
     print("PCA fitting with parameters: {}".format(pca.get_params()))
     pca.fit(trainInput)
     print('Fit complete!')
