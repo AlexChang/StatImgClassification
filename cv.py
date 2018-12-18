@@ -6,6 +6,8 @@ import argparse
 from sklearn import datasets
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import cross_val_score
+from sklearn.decomposition import PCA
 
 
 import model.svm as svm
@@ -26,6 +28,9 @@ def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
     parser.add_argument('--mode', type=str, default='lda')
     parser.add_argument('--best', action='store_true', default=False, help='')
+    parser.add_argument('--pca', action='store_true', default=False, help='')
+    parser.add_argument('--gs', action='store_true', default=False, help='grid search')
+    parser.add_argument('--predict', action='store_true', default=True, help='predict on test set')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
     parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
     parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
@@ -40,6 +45,14 @@ def predict(clf, validTestData):
     print('Prediction complete!')
     return predictionResult
 
+def fitPCA(trainInput):
+    pca = PCA(svd_solver='full', n_components='mle')
+    print("PCA fitting with parameters: {}".format(pca.get_params()))
+    pca.fit(trainInput)
+    print('Fit complete!')
+    return pca
+
+
 def cv(args, method, isPredict=True):
     # get timestamp
     timestamp = datetime.datetime.now().strftime("%b%d%H%M")
@@ -53,6 +66,11 @@ def cv(args, method, isPredict=True):
         print("Shape of training data: input: {}, target: {}".format(trainInput.shape, trainTarget.shape))
     else:
         (trainInput, trainTarget) = utils.loadTrainData()
+
+    # pca
+    if args.pca:
+        pca = fitPCA(trainInput)
+        trainInput = pca.transform(trainInput)
 
     # get classifier and param_grid
     if method == 'svm':
@@ -93,37 +111,61 @@ def cv(args, method, isPredict=True):
     # cv
     for score in scores:
         print("# Tuning hyper-parameters for {}".format(score))
-        print()
 
-        clf = GridSearchCV(clf, param_grid, cv=cv, scoring=score, n_jobs=args.job)
-        clf.fit(trainInput, trainTarget)
+        if args.gs:
+            clf = GridSearchCV(clf, param_grid, cv=cv, scoring=score, n_jobs=args.job)
+            clf.fit(trainInput, trainTarget)
+            scoreResult = utils.getGridSearchScoreResult(clf)
+            print(scoreResult)
+            parameter = "CVGridSearch_score={}'.format(score)"
+            # save best parameter
+            bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
+                                                                 timestamp=timestamp, isBest=True)
+            utils.saveParameters(clf.best_params_, bestParameterFileName)
+            # save cv grid scores
+            scoreFileName = utils.generateOutputFileName('txt', method=method, parameters=parameter,
+                                                         timestamp=timestamp)
+            utils.saveScores(scoreResult, scoreFileName)
+            # save best model
+            bestModelFileName = utils.generateOutputFileName('joblib', method=method, parameters=parameter,
+                                                             timestamp=timestamp, isBest=True)
+            utils.saveModel(clf, bestModelFileName)
+        else:
+            cvs = cross_val_score(clf, trainInput, cv=cv, scoring=score, n_jobs=args.job)
+            scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
+            print(scoreResult)
+            parameter = "CV_score={}'.format(score)"
+            # save parameter
+            parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
+                                                                 timestamp=timestamp, isBest=False)
+            utils.saveParameters(clf.get_params(), parameterFileName)
+            # save cv grid scores
+            scoreFileName = utils.generateOutputFileName('txt', method=method, parameters=parameter,
+                                                         timestamp=timestamp)
+            utils.saveScores(scoreResult, scoreFileName)
+            # save model
+            modelFileName = utils.generateOutputFileName('joblib', method=method, parameters=parameter,
+                                                             timestamp=timestamp, isBest=True)
+            utils.saveModel(clf, modelFileName)
 
-        scoreResult = utils.getScoreResult(clf)
-        print(scoreResult)
-
-        # save best parameter
-        bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp, isBest=True)
-        utils.saveParameters(clf.best_params_, bestParameterFileName)
-
-        # save cv grid scores
-        scoreFileName = utils.generateOutputFileName('txt', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp)
-        utils.saveScores(scoreResult, scoreFileName)
-
-        # save best model
-        bestModelFileName = utils.generateOutputFileName('joblib', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp, isBest=True)
-        utils.saveModel(clf, bestModelFileName)
-
-        if isPredict:
+        if args.predict:
             if args.sd:
                 print("Ignore prediction operation since using sample data set: iris! ")
             else:
                 # read test data
                 (testImgId, validTestData) = utils.loadTestData()
+                # pca
+                if args.pca:
+                    validTestData = pca.transform(validTestData)
+                # predict
                 predictionResult = predict(clf, validTestData)
 
                 # save result
                 result = utils.concatenateResult(testImgId, predictionResult)
-                resultFileName = utils.generateOutputFileName('csv', method=method, parameters='cv_score={}'.format(score), timestamp=timestamp, isBest=True)
+                if args.gd:
+                    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter, timestamp=timestamp, isBest=True)
+                else:
+                    resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter, timestamp=timestamp)
                 utils.saveResult(result, outputFileName=resultFileName)
 
 
@@ -134,12 +176,14 @@ def testModel(args, method, modelFileName='', isCV=True):
         clf = utils.loadModel(modelFileName)
     print(clf)
 
+
 def testParameter(args, method, parameterFileName='', isCV=True):
     if args.best:
         parameterDict = utils.loadBestParameters(method, isCV=isCV)
     else:
         parameterDict = utils.loadParameters(parameterFileName)
     print(parameterDict)
+
 
 def main():
     args = initArgParser()

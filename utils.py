@@ -16,6 +16,7 @@ scoreFolder = "score/"
 
 # data files
 trainDataFileName = "train.csv"
+#testDataFileName = "test.csv"
 testDataFileName = "test_2.csv"
 trainDataPath = dataFolder + trainDataFileName
 testDataPath = dataFolder + testDataFileName
@@ -61,6 +62,7 @@ def concatenateResult(testImgId, predictionResult):
     result = np.concatenate((testImgId, predictionResult), axis=1)
     result = result.astype(int)
     return result
+
 
 def generateOutputFileName(format, outputFileName='', method='', parameters='', timestamp='', isBest=False):
     """
@@ -144,7 +146,7 @@ def loadBestParameters(method, format='.json', isCV=False):
     if not format.startswith('.'):
         format = '.' + format
     if isCV:
-        pattern = parameterFolder + method + '*cv*best' + format
+        pattern = parameterFolder + method + '*CVGridSearch*best' + format
     else:
         pattern = parameterFolder + method + '*best' + format
     matchFileList = glob.glob(pattern)
@@ -185,7 +187,7 @@ def loadBestModel(method, format='.joblib', isCV=False):
     if not format.startswith('.'):
         format = '.' + format
     if isCV:
-        pattern = savedModelFolder + method + '*cv*best' + format
+        pattern = savedModelFolder + method + '*CVGridSearch*best' + format
     else:
         pattern = savedModelFolder + method + '*best' + format
     matchFileList = glob.glob(pattern)
@@ -200,7 +202,7 @@ def loadBestModel(method, format='.joblib', isCV=False):
     return clf
 
 
-def getScoreResult(clf):
+def getGridSearchScoreResult(clf):
     scoreResult = "Best parameters set found on training set:\n"
     scoreResult += str(clf.best_params_) + "\n"
     scoreResult += "Grid scores on training set:\n"
@@ -208,6 +210,12 @@ def getScoreResult(clf):
     stds = clf.cv_results_['std_test_score']
     for mean, std, params in zip(means, stds, clf.cv_results_['params']):
         scoreResult += "{:.5f} (+/-{:.5f}) for {}\n" .format(mean, std * 2, str(params))
+    return scoreResult
+
+
+def getCVScoreResult(cvs, params):
+    scoreResult = "CV score with params: {}\n".format(str(params))
+    scoreResult += "{:.5f} (+/-{:.5f})\n".format(cvs.mean(), cvs.std() * 2)
     return scoreResult
 
 
