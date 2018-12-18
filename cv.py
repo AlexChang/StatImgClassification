@@ -37,6 +37,7 @@ def initArgParser():
     parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
     parser.add_argument('--sm', action='store_false', default=True, help='NOT store model')
     parser.add_argument('--job', type=int, default=4)
+    parser.add_argument('--fn', type=str, default='', help='file name')
     args = parser.parse_args()
     return args
 
