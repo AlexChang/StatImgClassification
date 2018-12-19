@@ -27,7 +27,7 @@ supportedMethods = ['lin_svm', 'knn', 'lda', 'lr', 'rc']
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
     parser.add_argument('--mode', type=str, default='lr')
-    parser.add_argument('--pca', action='store_true', default=True, help='pca')
+    parser.add_argument('--pca', action='store_false', default=True, help='NOT pca')
     parser.add_argument('--dim', type=int, default=120, help='pca dim')
     parser.add_argument('--gs', action='store_true', default=False, help='grid search')
     parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
@@ -139,6 +139,7 @@ def cv(args, method):
         else:
             print("# Cross Validation for {}".format(score))
             cvs = cross_val_score(clf, trainInput, trainTarget, cv=cv, scoring=score, n_jobs=args.job)
+            clf.fit(trainInput, trainTarget)
             scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
             print(scoreResult)
             parameter = 'CV_score={}'.format(score)
