@@ -24,9 +24,9 @@ def compute_scores(X):
 (trainInput, trainTarget) = utils.loadTrainData()
 #(testImgId, validTestData) = utils.loadTestData()
 
-numStart = 20
-numEnd = 1520
-numSpan = 20
+numStart = 100
+numEnd = 185
+numSpan = 5
 
 n_components = np.arange(numStart, numEnd, numSpan)  # options for n_components
 
