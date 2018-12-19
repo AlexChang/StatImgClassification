@@ -4,7 +4,7 @@ param_grid = []
 
 def getModel(hyperParameter=None):
     if hyperParameter == None:
-        clf = ensemble.RandomForestClassifier()
+        clf = ensemble.AdaBoostClassifier()
     else:
-        clf = ensemble.RandomForestClassifier(**hyperParameter.parameterDict)
+        clf = ensemble.AdaBoostClassifier(**hyperParameter.parameterDict)
     return clf

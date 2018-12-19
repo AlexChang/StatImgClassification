@@ -1,4 +1,4 @@
-import parameter
+import hyperParameter
 import numpy as np
 import csv
 import json
@@ -216,7 +216,7 @@ def getGridSearchScoreResult(clf):
 
 
 def getCVScoreResult(cvs, params):
-    scoreResult = "Params: {}".format(str(params))
+    scoreResult = "Params: {}\n".format(str(params))
     scoreResult += "CV score: {:.5f} (+/-{:.5f})\n".format(cvs.mean(), cvs.std() * 2)
     return scoreResult
 

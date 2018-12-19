@@ -17,6 +17,9 @@ param_grid = [{'solver': ['newton-cg', 'lbfgs', 'sag', 'saga'], 'penalty': ['l2'
                'class_weight': [None, 'balanced'], 'multi_class': ['ovr'],
                'max_iter': [10000]}]
 
-def getModel(parameterDict={}):
-    clf = linear_model.LogisticRegression(**parameterDict)
+def getModel(hyperParameter=None):
+    if hyperParameter == None:
+        clf = linear_model.LogisticRegression()
+    else:
+        clf = linear_model.LogisticRegression(**hyperParameter.parameterDict)
     return clf

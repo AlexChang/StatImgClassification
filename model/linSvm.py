@@ -5,6 +5,9 @@ param_grid = [{'penalty': ['l2'], 'loss': ['squared_hinge', 'hinge'], 'dual': [T
                 {'penalty': ['l1', 'l2'], 'loss': ['squared_hinge'], 'dual': [False],
                  'C': [1, 10, 100, 1000], 'tol': [1e-3, 1e-4, 1e-5], 'max_iter': [5000]}]
 
-def getModel(parameterDict={}):
-    clf = svm.LinearSVC(**parameterDict)
+def getModel(hyperParameter=None):
+    if hyperParameter == None:
+        clf = svm.LinearSVC()
+    else:
+        clf = svm.LinearSVC(**hyperParameter.parameterDict)
     return clf

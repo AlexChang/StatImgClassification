@@ -1,6 +1,6 @@
 import  utils
 
-class Parameter(object):
+class HyperParameter(object):
 
     def __init__(self, method):
         self.parameterDict = {}
@@ -20,7 +20,7 @@ class Parameter(object):
         parameterString = ""
         for (k, v) in self.parameterDict.items():
             parameterString += str(k) + '=' + str(v) + '_'
-            if len(parameterString) > 100:
+            if len(parameterString) > 50:
                 break
         if parameterString.endswith('_'):
             parameterString = parameterString[:-1]

@@ -7,15 +7,15 @@ from sklearn.decomposition import PCA
 
 
 import model.svm as svm
-import model.linear_svm as linear_svm
+import model.linSvm as linear_svm
 import model.knn as knn
 import model.lda as lda
 import model.qda as qda
 import model.rf as rf
-import model.adaboost as adaboost
-import model.lr as lr
-import model.rc as rc
-from parameter import Parameter
+import model.adaBst as adaboost
+import model.logReg as lr
+import model.rigClf as rc
+from hyperParameter import Parameter
 import utils
 
 supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr', 'rc']

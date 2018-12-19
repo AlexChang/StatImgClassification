@@ -1,10 +1,10 @@
 from sklearn import discriminant_analysis
 
-param_grid = [{'penalty': ['l2'], 'loss': ['squared_hinge', 'hinge'], 'dual': [True],
-                     'C': [1, 10, 100, 1000], 'tol': [1e-3, 1e-4, 1e-5], 'max_iter': [5000]},
-                    {'penalty': ['l1', 'l2'], 'loss': ['squared_hinge'], 'dual': [False],
-                     'C': [1, 10, 100, 1000], 'tol': [1e-3, 1e-4, 1e-5], 'max_iter': [5000]},]
+param_grid = []
 
-def getModel(parameterDict={}):
-    clf = discriminant_analysis.QuadraticDiscriminantAnalysis(**parameterDict)
+def getModel(hyperParameter=None):
+    if hyperParameter == None:
+        clf = discriminant_analysis.QuadraticDiscriminantAnalysis()
+    else:
+        clf = discriminant_analysis.QuadraticDiscriminantAnalysis(**hyperParameter.parameterDict)
     return clf

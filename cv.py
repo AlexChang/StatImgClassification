@@ -11,24 +11,25 @@ from sklearn.decomposition import PCA
 
 
 import model.svm as svm
-import model.linear_svm as linear_svm
+import model.linSvm as linSvm
 import model.knn as knn
 import model.lda as lda
 import model.qda as qda
 import model.rf as rf
-import model.adaboost as adaboost
-import model.lr as lr
-import model.rc as rc
+import model.adaBst as ada_bst
+import model.logReg as logReg
+import model.rigClf as rigClf
+from hyperParameter import HyperParameter
 import utils
 
-#supportedMethods = ['svm', 'lin_svm', 'knn', 'lda', 'qda', 'rf', 'ada', 'lr', 'rc']
-supportedMethods = ['lin_svm', 'knn', 'lda', 'lr', 'rc']
+#supportedMethods = ['svm', 'linSvm', 'knn', 'lda', 'qda', 'rf', 'ada_bst', 'logReg', 'rigClf']
+supportedMethods = ['linSvm', 'knn', 'lda', 'logReg', 'rigClf']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lr')
+    parser.add_argument('--mode', type=str, default='lda')
     parser.add_argument('--pca', action='store_false', default=True, help='NOT pca')
-    parser.add_argument('--dim', type=int, default=120, help='pca dim')
+    parser.add_argument('--dim', type=int, default=130, help='pca dim')
     parser.add_argument('--gs', action='store_true', default=False, help='grid search')
     parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
     parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
@@ -50,7 +51,7 @@ def predict(clf, validTestData):
     return predictionResult
 
 
-def fitPCA(trainInput, dim=1289):
+def fitPCA(trainInput, dim=130):
     #pca = PCA(svd_solver='full', n_components='mle')
     pca = PCA(n_components=dim)
     print("PCA fitting with parameters: {}".format(pca.get_params()))
@@ -78,34 +79,39 @@ def cv(args, method):
         pca = fitPCA(trainInput, args.dim)
         trainInput = pca.transform(trainInput)
 
+    # hyper params
+    hyperParameter = HyperParameter(method)
+    #hyperParameter.addParameter('C', 10)
+    hyperParameter.addParameter('n_components', 130)
+
     # get classifier and param_grid
     if method == 'svm':
         param_grid = svm.param_grid
-        clf = svm.getModel()
-    elif method == 'lin_svm':
-        param_grid = linear_svm.param_grid
-        clf = linear_svm.getModel()
+        clf = svm.getModel(hyperParameter)
+    elif method == 'linSvm':
+        param_grid = linSvm.param_grid
+        clf = linSvm.getModel(hyperParameter)
     elif method == 'knn':
         param_grid = knn.param_grid
-        clf = knn.getModel()
+        clf = knn.getModel(hyperParameter)
     elif method == 'lda':
         param_grid = lda.param_grid
-        clf = lda.getModel()
+        clf = lda.getModel(hyperParameter)
     elif method == 'qda':
         param_grid = qda.param_grid
-        clf = qda.getModel()
+        clf = qda.getModel(hyperParameter)
     elif method == 'rf':
         param_grid = rf.param_grid
-        clf = rf.getModel()
-    elif method == 'ada':
-        param_grid = adaboost.param_grid
-        clf = adaboost.getModel()
-    elif method == 'lr':
-        param_grid = lr.param_grid
-        clf = lr.getModel()
-    elif method == 'rc':
-        param_grid = rc.param_grid
-        clf = rc.getModel()
+        clf = rf.getModel(hyperParameter)
+    elif method == 'ada_bst':
+        param_grid = ada_bst.param_grid
+        clf = ada_bst.getModel(hyperParameter)
+    elif method == 'logReg':
+        param_grid = logReg.param_grid
+        clf = logReg.getModel(hyperParameter)
+    elif method == 'rigClf':
+        param_grid = rigClf.param_grid
+        clf = rigClf.getModel(hyperParameter)
     else:
         raise ValueError("unsupported classification method: {}".format(method))
 
@@ -122,7 +128,10 @@ def cv(args, method):
             clf.fit(trainInput, trainTarget)
             scoreResult = utils.getGridSearchScoreResult(clf)
             print(scoreResult)
-            parameter = 'CVGridSearch_score={}={:.5f}'.format(score, clf.best_score_)
+            parameter = 'CVGridSearch_{}={:.5f}'.format(score, clf.best_score_)
+            if args.pca:
+                parameter += '_pca={}'.format(args.dim)
+            parameter += '_{:.50s}'.format(str(clf.best_params_))
             # save best parameter
             bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=True)
@@ -142,7 +151,11 @@ def cv(args, method):
             clf.fit(trainInput, trainTarget)
             scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
             print(scoreResult)
-            parameter = 'CV_score={}={:.5f}'.format(score, cvs.mean())
+            parameter = 'CV_{}={:.5f}'.format(score, cvs.mean())
+            if args.pca:
+                parameter += '_pca={}'.format(args.dim)
+            if not hyperParameter.parameterDict == {}:
+                parameter += '_{}'.format(hyperParameter.toString())
             # save parameter
             parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=False)
