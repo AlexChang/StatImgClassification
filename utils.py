@@ -110,6 +110,24 @@ def saveResult(result, outputFileName):
     print("Save complete!")
 
 
+def parameterDictToString(parameterDict):
+    parameterString = ""
+    for (k, v) in parameterDict.items():
+        parameterString += str(k).replace('\n', '') + '=' + str(v).replace('\n', '') + '_'
+        if len(parameterString) > 50:
+            break
+    if parameterString.endswith('_'):
+        parameterString = parameterString[:-1]
+    return parameterString
+
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
+
 def saveParameters(parameterDict, outputFileName):
     """
     :param clf: classifier
@@ -120,7 +138,7 @@ def saveParameters(parameterDict, outputFileName):
     outputFilePath = parameterFolder + outputFileName
     print("Saving parameters to : '{}'...".format(outputFilePath))
     f = open(outputFilePath, 'w')
-    json.dump(parameterDict, f)
+    json.dump(parameterDict, f, cls=NumpyEncoder)
     f.close()
     print("Save complete!")
 

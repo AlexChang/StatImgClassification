@@ -17,11 +17,4 @@ class HyperParameter(object):
         self.addParametersByDict(parameterDict)
 
     def toString(self):
-        parameterString = ""
-        for (k, v) in self.parameterDict.items():
-            parameterString += str(k) + '=' + str(v) + '_'
-            if len(parameterString) > 50:
-                break
-        if parameterString.endswith('_'):
-            parameterString = parameterString[:-1]
-        return parameterString
+        return utils.parameterDictToString(self.parameterDict)

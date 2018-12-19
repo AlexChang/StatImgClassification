@@ -1,0 +1,2 @@
+Params: {'n_components': None, 'priors': None, 'shrinkage': None, 'solver': 'eigen', 'store_covariance': False, 'tol': 0.0001}
+CV score: 0.98333 (+/-0.01371)

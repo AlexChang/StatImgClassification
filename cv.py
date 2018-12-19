@@ -27,10 +27,10 @@ supportedMethods = ['linSvm', 'knn', 'lda', 'logReg', 'rigClf']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lda')
+    parser.add_argument('--mode', type=str, default='logReg')
     parser.add_argument('--pca', action='store_false', default=True, help='NOT pca')
     parser.add_argument('--dim', type=int, default=130, help='pca dim')
-    parser.add_argument('--gs', action='store_true', default=False, help='grid search')
+    parser.add_argument('--gs', action='store_true', default=True, help='grid search')
     parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
     parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
@@ -81,14 +81,19 @@ def cv(args, method):
 
     # hyper params
     hyperParameter = HyperParameter(method)
-    #hyperParameter.addParameter('C', 10)
-    hyperParameter.addParameter('n_components', 130)
+    if not args.gs:
+        #hyperParameter.addParameter('C', 10)
+        #hyperParameter.addParameter('n_components', 130)
+        prior = [1/12 for x in range(12)]
+        prior = np.asarray(prior)
+        #hyperParameter.addParameter('priors', prior)
+        hyperParameter.addParameter('solver', 'eigen')
 
     # get classifier and param_grid
     if method == 'svm':
         param_grid = svm.param_grid
         clf = svm.getModel(hyperParameter)
-    elif method == 'linSvm':
+    elif method == 'linsvm':
         param_grid = linSvm.param_grid
         clf = linSvm.getModel(hyperParameter)
     elif method == 'knn':
@@ -103,13 +108,13 @@ def cv(args, method):
     elif method == 'rf':
         param_grid = rf.param_grid
         clf = rf.getModel(hyperParameter)
-    elif method == 'ada_bst':
+    elif method == 'adabst':
         param_grid = ada_bst.param_grid
         clf = ada_bst.getModel(hyperParameter)
-    elif method == 'logReg':
+    elif method == 'logreg':
         param_grid = logReg.param_grid
         clf = logReg.getModel(hyperParameter)
-    elif method == 'rigClf':
+    elif method == 'rigclf':
         param_grid = rigClf.param_grid
         clf = rigClf.getModel(hyperParameter)
     else:
@@ -131,7 +136,7 @@ def cv(args, method):
             parameter = 'CVGridSearch_{}={:.5f}'.format(score, clf.best_score_)
             if args.pca:
                 parameter += '_pca={}'.format(args.dim)
-            parameter += '_{:.50s}'.format(str(clf.best_params_))
+            parameter += '_{}'.format(utils.parameterDictToString(clf.best_params_))
             # save best parameter
             bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=True)
