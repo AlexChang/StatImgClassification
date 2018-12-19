@@ -8,7 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 from sklearn.decomposition import PCA
-
+from sklearn import linear_model
 
 import model.svm as svm
 import model.linear_svm as linear_svm
@@ -26,16 +26,16 @@ supportedMethods = ['lin_svm', 'knn', 'lda', 'lr', 'rc']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='lr')
-    parser.add_argument('--pca', action='store_true', default=True, help='pca')
-    parser.add_argument('--dim', type=int, default=120, help='pca dim')
+    parser.add_argument('--mode', type=str, default='linReg')
+    parser.add_argument('--pca', action='store_true', default=False, help='pca')
+    parser.add_argument('--dim', type=int, default=1289, help='pca dim')
     parser.add_argument('--gs', action='store_true', default=False, help='grid search')
-    parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
+    parser.add_argument('--predict', action='store_false', default=False, help='NOT predict on test set')
     parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
     parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
     parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
-    parser.add_argument('--sm', action='store_false', default=True, help='NOT store model')
+    parser.add_argument('--sm', action='store_false', default=False, help='NOT store model')
     parser.add_argument('--job', type=int, default=4)
     parser.add_argument('--fn', type=str, default='', help='file name')
     args = parser.parse_args()
@@ -107,7 +107,7 @@ def cv(args, method):
         param_grid = rc.param_grid
         clf = rc.getModel()
     else:
-        raise ValueError("unsupported classification method: {}".format(method))
+        clf = linear_model.LinearRegression()
 
     # set cv and scores
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=9)

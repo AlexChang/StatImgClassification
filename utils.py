@@ -18,7 +18,8 @@ graphFolder = "graph/"
 # data files
 trainDataFileName = "train.csv"
 #testDataFileName = "test.csv"
-testDataFileName = "test_2.csv"
+#testDataFileName = "test_2.csv"
+testDataFileName = "test_3.csv"
 trainDataPath = dataFolder + trainDataFileName
 testDataPath = dataFolder + testDataFileName
 
