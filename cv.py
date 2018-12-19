@@ -122,7 +122,7 @@ def cv(args, method):
             clf.fit(trainInput, trainTarget)
             scoreResult = utils.getGridSearchScoreResult(clf)
             print(scoreResult)
-            parameter = 'CVGridSearch_score={}'.format(score)
+            parameter = 'CVGridSearch_score={}={:.5f}'.format(score, clf.best_score_)
             # save best parameter
             bestParameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=True)
@@ -142,7 +142,7 @@ def cv(args, method):
             clf.fit(trainInput, trainTarget)
             scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
             print(scoreResult)
-            parameter = 'CV_score={}'.format(score)
+            parameter = 'CV_score={}={:.5f}'.format(score, cvs.mean())
             # save parameter
             parameterFileName = utils.generateOutputFileName('json', method=method, parameters=parameter,
                                                                  timestamp=timestamp, isBest=False)
