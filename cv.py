@@ -171,7 +171,7 @@ def cv(args, method):
 
                 # save result
                 result = utils.concatenateResult(testImgId, predictionResult)
-                if args.gd:
+                if args.gs:
                     resultFileName = utils.generateOutputFileName('csv', method=method, parameters=parameter,
                                                                   timestamp=timestamp, isBest=True)
                 else:
