@@ -87,7 +87,8 @@ def cv(args, method):
         prior = [1/12 for x in range(12)]
         prior = np.asarray(prior)
         #hyperParameter.addParameter('priors', prior)
-        hyperParameter.addParameter('solver', 'eigen')
+        #hyperParameter.addParameter('solver', 'eigen')
+        hyperParameter.addParametersByDict({'max_iter': 10000, 'tol': 0.01, 'C': 100, 'class_weight': 'balanced', 'multi_class': 'multinomial', 'solver': 'saga'})
 
     # get classifier and param_grid
     if method == 'svm':
