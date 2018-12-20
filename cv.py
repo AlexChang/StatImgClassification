@@ -27,7 +27,7 @@ supportedMethods = ['linSvm', 'knn', 'lda', 'logReg', 'rigClf']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='logReg')
+    parser.add_argument('--mode', type=str, default='linSvm')
     parser.add_argument('--pca', action='store_false', default=True, help='NOT pca')
     parser.add_argument('--dim', type=int, default=130, help='pca dim')
     parser.add_argument('--gs', action='store_true', default=True, help='grid search')

@@ -7,7 +7,7 @@ param_grid = [{'penalty': ['l2'], 'loss': ['squared_hinge', 'hinge'], 'dual': [T
                  'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'tol': [1e-2, 1e-3, 1e-4, 1e-5], 'max_iter': [10000]}]
 '''
 
-param_grid = [{'penalty': ['l2'], 'loss': ['squared_hinge', 'hinge'], 'dual': [True],
+param_grid = [{'penalty': ['l1', 'l2'], 'loss': ['squared_hinge'], 'dual': [False],
                  'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'tol': [1e-2, 1e-3, 1e-4, 1e-5], 'max_iter': [10000]}]
 
 def getModel(hyperParameter=None):
