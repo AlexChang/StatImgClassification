@@ -88,7 +88,10 @@ def cv(args, method):
         prior = np.asarray(prior)
         #hyperParameter.addParameter('priors', prior)
         #hyperParameter.addParameter('solver', 'eigen')
-        hyperParameter.addParametersByDict({'max_iter': 10000, 'tol': 0.01, 'C': 100, 'class_weight': 'balanced', 'multi_class': 'multinomial', 'solver': 'saga'})
+        #hyperParameter.addParametersByDict({'max_iter': 10000, 'tol': 0.01, 'C': 100, 'class_weight': 'balanced', 'dual': False, 'multi_class': 'multinomial', 'solver': 'saga', 'penalty': 'l2'})
+        #hyperParameter.addParametersByDict({'solver': 'liblinear', 'tol': 0.01, 'penalty': 'l1', 'max_iter': 10000, 'multi_class': 'ovr', 'C': 1, 'class_weight': None})
+        #hyperParameter.addParametersByDict({'penalty': 'l1', 'max_iter': 10000, 'class_weight': 'balanced', 'solver': 'saga', 'dual': False, 'multi_class': 'multinomial', 'tol': 0.01, 'C': 10})
+        #hyperParameter.addParametersByDict({'max_iter': 10000, 'class_weight': None, 'solver': 'liblinear', 'C': 1, 'penalty': 'l2', 'multi_class': 'ovr', 'dual': True, 'tol': 0.01})
 
     # get classifier and param_grid
     if method == 'svm':
