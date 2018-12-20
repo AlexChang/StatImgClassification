@@ -1,0 +1,1 @@
+{"C": 0.01, "class_weight": null, "dual": true, "fit_intercept": true, "intercept_scaling": 1, "loss": "squared_hinge", "max_iter": 10000, "multi_class": "ovr", "penalty": "l2", "random_state": null, "tol": 0.01, "verbose": 0}

@@ -1,0 +1,2 @@
+Params: {'C': 0.01, 'class_weight': None, 'dual': True, 'fit_intercept': True, 'intercept_scaling': 1, 'loss': 'squared_hinge', 'max_iter': 10000, 'multi_class': 'ovr', 'penalty': 'l2', 'random_state': None, 'tol': 0.01, 'verbose': 0}
+CV score: 0.98667 (+/-0.00978)
