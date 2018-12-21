@@ -22,5 +22,7 @@ lr | 0.92478 | 12.19
 lr_pca=130 | 0.91559 | 12.19
 logReg_gs4 | 0.92521 | 12.20
 linSvm_gs1 | 0.92329 | 12.20
+linSvm_scale | 0.93076 | 12.20
+linSvm_minmax | 0.93226 | 12.20
 
 ## Pending

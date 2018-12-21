@@ -8,6 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 from sklearn.decomposition import PCA
+from sklearn import preprocessing
 
 
 import model.svm as svm
@@ -27,16 +28,17 @@ supportedMethods = ['linSvm', 'knn', 'lda', 'logReg', 'rigClf']
 
 def initArgParser():
     parser = argparse.ArgumentParser(description='Image Classifier')
-    parser.add_argument('--mode', type=str, default='linSvm')
+    parser.add_argument('--mode', type=str, default='lda')
     parser.add_argument('--pca', action='store_false', default=True, help='NOT pca')
     parser.add_argument('--dim', type=int, default=130, help='pca dim')
+    parser.add_argument('--pre', type=str, default='minmax')
     parser.add_argument('--gs', action='store_true', default=True, help='grid search')
     parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
     parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
     parser.add_argument('--tp', action='store_true', default=False, help='test parameters')
     parser.add_argument('--sd', action='store_true', default=False, help='sample data set')
-    parser.add_argument('--sm', action='store_false', default=True, help='NOT store model')
+    parser.add_argument('--sm', action='store_false', default=False, help='NOT store model')
     parser.add_argument('--job', type=int, default=4)
     parser.add_argument('--fn', type=str, default='', help='file name')
     args = parser.parse_args()
@@ -74,6 +76,17 @@ def cv(args, method):
     else:
         (trainInput, trainTarget) = utils.loadTrainData()
 
+    # preprocessing
+    if args.pre == 'scale':
+        trainInput = preprocessing.scale(trainInput)
+    elif args.pre == 'l2':
+        trainInput = preprocessing.normalize(trainInput, norm='l2')
+    elif args.pre == 'l1':
+        trainInput = preprocessing.normalize(trainInput, norm='l1')
+    elif args.pre == 'minmax':
+        min_max_scaler = preprocessing.MinMaxScaler()
+        trainInput = min_max_scaler.fit_transform(trainInput)
+
     # pca
     if args.pca:
         pca = fitPCA(trainInput, args.dim)
@@ -90,11 +103,13 @@ def cv(args, method):
         #hyperParameter.addParameter('priors', prior)
         #hyperParameter.addParameter('solver', 'eigen')
 
-        ### log Reg
+        ### log Reg Pca
         #hyperParameter.addParametersByDict({'max_iter': 10000, 'tol': 0.01, 'C': 100, 'class_weight': 'balanced', 'dual': False, 'multi_class': 'multinomial', 'solver': 'saga', 'penalty': 'l2'})
         #hyperParameter.addParametersByDict({'solver': 'liblinear', 'tol': 0.01, 'penalty': 'l1', 'max_iter': 10000, 'multi_class': 'ovr', 'C': 1, 'class_weight': None})
         #hyperParameter.addParametersByDict({'penalty': 'l1', 'max_iter': 10000, 'class_weight': 'balanced', 'solver': 'saga', 'dual': False, 'multi_class': 'multinomial', 'tol': 0.01, 'C': 10})
         #hyperParameter.addParametersByDict({'max_iter': 10000, 'class_weight': None, 'solver': 'liblinear', 'C': 1, 'penalty': 'l2', 'multi_class': 'ovr', 'dual': True, 'tol': 0.01})
+        #hyperParameter.addParametersByDict({'penalty': 'l2', 'dual': False, 'class_weight': None, 'tol': 0.01, 'C': 0.1, 'solver': 'saga', 'multi_class': 'multinomial', 'max_iter': 10000})
+        #hyperParameter.addParametersByDict({'solver': 'saga', 'C': 0.1, 'multi_class': 'multinomial', 'dual': False, 'penalty': 'l1', 'class_weight': None, 'max_iter': 10000, 'tol': 0.01})
 
         ### lin Svm
         #hyperParameter.addParametersByDict({'penalty': 'l2', 'dual': True, 'C': 0.01, 'loss': 'squared_hinge', 'tol': 0.01, 'max_iter': 10000})
@@ -146,6 +161,8 @@ def cv(args, method):
             scoreResult = utils.getGridSearchScoreResult(clf)
             print(scoreResult)
             parameter = 'CVGridSearch_{}={:.5f}'.format(score, clf.best_score_)
+            if not args.pre == '':
+                parameter += '_pre={}'.format(args.pre)
             if args.pca:
                 parameter += '_pca={}'.format(args.dim)
             parameter += '_{}'.format(utils.parameterDictToString(clf.best_params_))
@@ -169,6 +186,8 @@ def cv(args, method):
             scoreResult = utils.getCVScoreResult(cvs, clf.get_params())
             print(scoreResult)
             parameter = 'CV_{}={:.5f}'.format(score, cvs.mean())
+            if not args.pre == '':
+                parameter += '_pre={}'.format(args.pre)
             if args.pca:
                 parameter += '_pca={}'.format(args.dim)
             if not hyperParameter.parameterDict == {}:
@@ -193,6 +212,15 @@ def cv(args, method):
             else:
                 # read test data
                 (testImgId, validTestData) = utils.loadTestData()
+                # preprocessing
+                if args.pre == 'scale':
+                    validTestData = preprocessing.scale(validTestData)
+                elif args.pre == 'l2':
+                    validTestData = preprocessing.normalize(validTestData, norm='l2')
+                elif args.pre == 'l1':
+                    validTestData = preprocessing.normalize(validTestData, norm='l1')
+                elif args.pre == 'minmax':
+                    validTestData = min_max_scaler.transform(validTestData)
                 # pca
                 if args.pca:
                     validTestData = pca.transform(validTestData)
