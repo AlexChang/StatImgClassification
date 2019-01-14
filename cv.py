@@ -32,7 +32,7 @@ def initArgParser():
     parser.add_argument('--pca', action='store_false', default=False, help='NOT pca')
     parser.add_argument('--dim', type=int, default=130, help='pca dim')
     parser.add_argument('--pre', type=str, default='l2')
-    parser.add_argument('--gs', action='store_true', default=True, help='grid search')
+    parser.add_argument('--gs', action='store_true', default=False, help='grid search')
     parser.add_argument('--predict', action='store_false', default=True, help='NOT predict on test set')
     parser.add_argument('--best', action='store_true', default=False, help='load best model/params')
     parser.add_argument('--tm', action='store_true', default=False, help='test model')
