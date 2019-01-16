@@ -6,10 +6,12 @@ param_grid = [{'solver': ['svd'], 'shrinkage': [None],
                'store_covariance': [False, True], 'tol': [1e-3, 1e-4, 1e-5]},
               {'solver': ['lsqr', 'eigen'], 'shrinkage': [None, 'auto'],
                'store_covariance': [False, True], 'tol': [1e-3, 1e-4, 1e-5]}]
-'''
+
 prior = [1/12 for x in range(12)]
 prior = np.asarray(prior)
 param_grid = [{'solver': ['svd', 'lsqr', 'eigen'], 'priors': [prior, None]}]
+'''
+param_grid = [{'solver': ['svd', 'lsqr', 'eigen']}]
 
 def getModel(hyperParameter=None):
     if hyperParameter == None:

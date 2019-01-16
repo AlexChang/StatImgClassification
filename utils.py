@@ -16,11 +16,11 @@ scoreFolder = "score/"
 graphFolder = "graph/"
 
 # data files
-#trainDataFileName = "train.csv"
+trainDataFileName = "train.csv"
 #trainDataFileName = "newData.csv"
 #trainDataFileName = "newData2.csv"
 #trainDataFileName = "newData3.csv"
-trainDataFileName = "newData4.csv"
+#trainDataFileName = "newData4.csv"
 #trainDataFileName = "newModData2.csv"
 #testDataFileName = "test.csv"
 #testDataFileName = "test_2.csv"
