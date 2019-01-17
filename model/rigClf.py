@@ -7,8 +7,8 @@ param_grid = [{'solver': ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga']
 '''
 
 param_grid = [{'solver': ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga'],
-               'alpha': [1e-2, 1e-1, 1, 10, 100], 'tol': [1e-4],
-               'class_weight': [None, 'balanced'], 'max_iter': [10000]}]
+               'alpha': [1e-4, 1e-3, 1000, 10000], 'tol': [1e-4],
+               'class_weight': ['balanced'], 'max_iter': [10000]}]
 
 def getModel(hyperParameter=None):
     if hyperParameter == None:

@@ -357,6 +357,7 @@
 
 % Extra Packages
 \usepackage{booktabs}
+\usepackage{url}
 
 % Extra Commands
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -525,7 +526,47 @@ Scale, MinMaxScale, L1/2 Normalization
 
 \section{Dimensionality Reduction}
 \label{sec:dimensionality_reduction}
-PCA, Factor Analysis
+In this section, we will introduce two dimensionality reduction methods, principle component analysis in \ref{subsec:pca} and factor analysis in \ref{subsec:fa}.
+
+\subsection{Principle Component Analysis}
+\label{subsec:pca}
+
+Principle Component Analysis (abbreviation as PCA) is used to decompose a multivariate dataset in a set of successive orthogonal components that explain a maximum amount of the variance. Given a set of data in ${\rm I!R}^p$, denote the observations by $x_1, x_2,...,x_N$, and consider the rank-$q$ linear model for representing them
+\begin{equation}
+  f(\lambda) = \mu + V_q\lambda,
+\end{equation}
+where $\mu$ is a location vector in ${\rm I!R}^p$, $V_q$ is a $p \times q$ matrix with $q$ orthogonal unit vectors as columns, and $\lambda$ is a $q$ vector of parameters. Fitting such a model to the data by least squares amounts to minimizing the reconstruction error
+\begin{equation}
+  \min_{\mu, \{\lambda_i\}, V_q} \sum_{i=1}^N||x_i - \mu - V_q\lambda_i^2|.
+\end{equation}
+
+We can partially optimize for $\mu$ and the $\lambda_i$ to obtain
+\begin{align}
+  \hat{\mu} &= \bar{x},\\
+  \hat{\lambda}_i &= V_q^T(x_i - \bar{x}).
+\end{align}
+
+This leaves us to find the orthogonal matrix $V_q$:
+\begin{equation}
+  \min_{V_q}\sum_{i=1}^N||(x_i - \bar{x}) - V_qV_q^T(x_i - \bar{x})||^2.
+\end{equation}
+
+The $p\times p$ matrix $H_q = V_qV_q^T$ is a projection matrix, and maps each point $x_i$ onto its rank-$q$ reconstruction $H_qx_i$, the orthogonal projection of $x_i$ onto the subspace spanned by the columns of $V_q$.
+
+\subsection{Factor Analysis}
+\label{subsec:fa}
+The classical factor analysis model has the form
+\begin{equation}
+  X = AS + \epsilon.
+\end{equation}
+
+Here $S$ is a vector of $q < p$ underlying latent variables or factors, $A$ is a $p \times q$ matrix of factor loadings, and the $\epsilon_j$ are uncorrelated zero-mean disturbances. Typically the $S_l$ and the $\epsilon_j$ are modeled as Gaussian random variables, and the model is fit by maximum likelihood. The parameters all reside in the covariance matrix
+\begin{equation}
+  \Sigma = AA^T + D_{\epsilon},
+\end{equation}
+where $D_{\epsilon} = {\rm diag}[{\rm Var}(\epsilon_1),...,Var(\epsilon_p)]$. The columns of $A$ are referred to as the  factor loadings, and are used to name and interpret the factors.
+
+Factor analysis can produce similar components (the columns of its loading matrix) to PCA. However, one can not make any general statements about these components. The main advantage for Factor Analysis over PCA is that it can model the variance in every direction of the input space independently (heteroscedastic noise). I followed the instructions given in \cite{pcavsfa} to find the best n\_components of our data set in this project and the results are shown in Section \ref{}.%#TODO section link
 
 \section{Classification Methods}
 \label{sec:classification_methods}
@@ -637,9 +678,70 @@ In this project, we use the implementation provided by 'sklearn.discriminant\_an
 
 \subsection{Support Vector Machine}
 \label{subsec:support_vector_machine}
+Support Vector Machine (abbreviation as SVM) constructs a hyperplane or set of hyperplanes in a high- or infinite-dimensional space, which can be used for classification and regression. Given slack variables $\xi$, the formulation of "standard" support vector classifier is:
+\begin{align}
+  \label{eq:svm}
+  &\min_{\beta, \beta_0}\frac{1}{2}||\beta||^2 + C\sum_{i=1}^N\xi_i \\
+  &{\rm subject\ to\ } \xi_i \geq 0, y_i(x_i^T\beta + \beta_0) \geq M(1-\xi_i), \forall i. \notag
+\end{align}
+
+The Lagtange (primal) function is
+\begin{align}
+  \label{eq:svm_lp}
+  L_P = \frac{1}{2}&||\beta||^2 + C\sum_{i=1}^N\xi_i - \sum_{i=1}^N\mu_i\xi_i \\
+  &- \sum_{i=1}^N\alpha_i[y_i(x_i^T\beta + \beta_0) - (1 - \xi_i)], \notag
+\end{align}
+which we minimize w.r.t $\beta, \beta_0$ and $\xi_i$. Setting the respective derivatives to zero, we get
+\begin{equation}
+  \label{eq:svm_beta}
+  \beta = \sum_{i=1}^N\alpha_i y_i x_i,
+\end{equation}
+\begin{equation}
+  \label{eq:svm_0}
+  0 = \sum_{i=1}^N\alpha_i y_i,
+\end{equation}
+\begin{equation}
+  \label{eq:svm_alpha}
+  \alpha_i = C - \mu_i, \forall i,
+\end{equation}
+as well as the positivity constraints $\alpha_i, \mu_i, \xi_i \geq 0\ \forall i$. By substituting Eq.(\ref{eq:svm_beta})-(\ref{eq:svm_alpha}) into Eq.(\ref{eq:svm_lp}), we obtain the Lagrangian dual objective function
+\begin{equation}
+  L_D = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i=1}^N\sum_{i'=1}^N\alpha_i\alpha_{i'}y_iy_{i'}x_i^Tx_{i'},
+\end{equation}
+which gives a lower bound on the objective function for any feasible point. We maximize $L_D$ subject to $0 \leq \alpha_i \leq C$ and $\sum_{i=1}^N\alpha_iy_i = 0$. In addition to Eq.(\ref{eq:svm_beta})-(\ref{eq:svm_alpha}), the Karush-Kuhn-Tucker conditions include the constraints
+\begin{align}
+  \alpha_i[y_i(x_i^T\beta + \beta_0) - (1 - \xi_i)] &= 0,\\
+  \mu_i\xi_i &= 0,\\
+  y_i(x_i^T\beta + \beta_0) - (1-\xi_i) &\geq 0,
+\end{align}
+for $i = 1,...,N$.
+
+In this project, we use the implementation provided by 'sklearn.svm.LinearSVC'. Similar to SVC with parameter kernel=’linear’, but implemented in terms of liblinear rather than libsvm, so it has more flexibility in the choice of penalties and loss functions and should scale better to large numbers of samples. Some important parameters of this method are introduced as follows:
+\begin{itemize}
+  \item \textbf{penalty}: This parameter is used to specify the norm used in the penalization and the candidate values are 'l1' or 'l2'.
+  \item \textbf{loss}: This parameter specifies the loss function. ‘hinge’ is the standard SVM loss while ‘squared\_hinge’ is the square of the hinge loss.
+  \item \textbf{dual}: It specifies whether to solve the dual or primal optimization problem. Prefer dual=False when n\_samples $>$ n\_features.
+  \item \textbf{C}: This is the penalty parameter of the error term.
+\end{itemize}
 
 \subsection{K Nearest Neighbour}
 \label{subsec:k_nearest_neighbour}
+neighbours-based classification is a type of instance-based learning or non-generalizing learning: it does not attempt to construct a general internal model, but simply stores instances of the training data. Classification is computed from a simple majority vote of the nearest neighbours of each point: a query point is assigned the data class which has the most representatives within the nearest neighbours of the point.
+
+The k-neighbours classification is the most commonly used technique. The optimal choice of the value k is highly data-dependent: in general a larger k  suppresses the effects of noise, but makes the classification boundaries less distinct. Specifically, the k-nearest neighbour fit has the follow formulation:
+\begin{equation}
+  \hat{f}(x_0) = \frac{1}{k}\sum_{l=1}^k f(x_{(l)}),
+\end{equation}
+where the subscripts in parantheses $(l)$ indicate the sequence of nearest neighbours to $x_0$.
+
+In this project, we use the implementation provided by 'sklearn.neighbors.KNeighborsClassifier'. Some important parameters of this method are introduced as follows:
+\begin{itemize}
+  \item \textbf{n\_neighbours}: This parameter specifies the number of neighbours to use by default for k-neighbours query.
+  \item \textbf{weights}: It represents the weight function used in prediction. Two candidate values are 'uniform' and 'distance'. For 'uniform', all points in each neighborhood are weighted equally. For 'distance', points are weighted by inverse of their distance. In this case, closer neighbors of a query point will have a greater influence than neighbors which are further away.
+  \item \textbf{p}: It indicates the power parameter for the Minkowski metric. Psually p is equal to 1 or 2.
+  \item \textbf{algorithm}: This parameter denotes the algorithm used to compute the nearest neighbours. Candidate algorithms are 'ball\_tree', 'kd\_tree' and 'brute'.
+  \item \textbf{leaf\_size}: This parameter is passed to BallTree or KDTree, which can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem.
+\end{itemize}
 
 \section{Model Selection}
 \label{sec:model_selection}
