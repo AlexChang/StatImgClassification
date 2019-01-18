@@ -1,8 +1,6 @@
-PWD c:/Users/zfmed/Desktop/Statistical Learning/StatImgClass/report
-INPUT c:/texlive/2018/texmf.cnf
-INPUT c:/texlive/2018/texmf-dist/web2c/texmf.cnf
+PWD c:/Users/Alex Chang/Desktop/Statistical Learning/StatImgClass/report
 INPUT c:/texlive/2018/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT c:/Users/zfmed/Desktop/Statistical Learning/StatImgClass/report/report.tex
+INPUT c:/Users/Alex Chang/Desktop/Statistical Learning/StatImgClass/report/report.tex
 OUTPUT .//report.log
 INPUT c:/texlive/2018/texmf-dist/tex/latex/IEEEtran/IEEEtran.cls
 INPUT c:/texlive/2018/texmf-dist/tex/latex/IEEEtran/IEEEtran.cls
@@ -127,8 +125,6 @@ INPUT c:/texlive/2018/texmf-dist/tex/latex/psnfss/ot1phv.fd
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm
-INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm
-INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvb7t.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
@@ -161,10 +157,6 @@ INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/helvetic/phvr7t.vf
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr8r.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/helvetic/phvr7t.vf
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr8r.tfm
-INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/helvetic/phvb7t.vf
-INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvb8r.tfm
-INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/helvetic/phvr7t.vf
-INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr8r.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/helvetic/phvbc7t.vf
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvb8r.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvb8r.tfm
@@ -178,8 +170,44 @@ INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/palatino/pplb7t.vf
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/palatino/pplr7t.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/palatino/pplr7t.tfm
+INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm
+INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/helvetic/phvr7t.vf
+INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/helvetic/phvr8r.tfm
 INPUT c:/texlive/2018/texmf-dist/fonts/vf/adobe/palatino/pplr7t.vf
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/palatino/pplr8r.tfm
+INPUT .//images/pca_coarse.png
+INPUT ./images/pca_coarse.png
+INPUT ./images/pca_coarse.png
+INPUT .//images/pca_fine.png
+INPUT ./images/pca_fine.png
+INPUT ./images/pca_fine.png
+INPUT .//images/ridgel1.pdf
+INPUT ./images/ridgel1.pdf
+INPUT ./images/ridgel1.pdf
+INPUT .//images/ridgel2.pdf
+INPUT ./images/ridgel2.pdf
+INPUT ./images/ridgel2.pdf
+INPUT .//images/ridgeminmax.pdf
+INPUT ./images/ridgeminmax.pdf
+INPUT ./images/ridgeminmax.pdf
+INPUT .//images/logregl1.pdf
+INPUT ./images/logregl1.pdf
+INPUT ./images/logregl1.pdf
+INPUT .//images/logregl2.pdf
+INPUT ./images/logregl2.pdf
+INPUT ./images/logregl2.pdf
+INPUT .//images/lda.pdf
+INPUT ./images/lda.pdf
+INPUT ./images/lda.pdf
+INPUT .//images/linsvm.pdf
+INPUT ./images/linsvm.pdf
+INPUT ./images/linsvm.pdf
+INPUT .//images/knnp1.pdf
+INPUT ./images/knnp1.pdf
+INPUT ./images/knnp1.pdf
+INPUT .//images/knnp2.pdf
+INPUT ./images/knnp2.pdf
+INPUT ./images/knnp2.pdf
 INPUT .//report.bbl
 INPUT .//report.bbl
 INPUT c:/texlive/2018/texmf-dist/fonts/tfm/adobe/palatino/pplr7t.tfm

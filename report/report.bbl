@@ -34,9 +34,9 @@ A.~Gramfort and D.~Engemann, ``Model selection with probabilistic pca and
   \url{https://scikit-learn.org/stable/auto_examples/decomposition/plot_pca_vs_fa_model_selection.html#sphx-glr-auto-examples-decomposition-plot-pca-vs-fa-model-selection-py},
   accessed January 18, 2019.
 
-\bibitem{zhang2018dynamic}
-F.~Zhang, Z.~Tang, M.~Chen, X.~Zhou, and W.~Jia, ``A dynamic resource
-  overbooking mechanism in fog computing,'' in \emph{15th {IEEE} International
-  Conference on Mobile Ad Hoc and Sensor Systems (MASS)}, 2018, pp. 89--97.
+\bibitem{friedman2001elements}
+J.~Friedman, T.~Hastie, and R.~Tibshirani, \emph{The elements of statistical
+  learning}.\hskip 1em plus 0.5em minus 0.4em\relax Springer series in
+  statistics New York, NY, USA:, 2001, vol.~1, no.~10.
 
 \end{thebibliography}
