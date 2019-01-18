@@ -22,9 +22,9 @@ trainDataFileName = "train.csv"
 #trainDataFileName = "newData3.csv"
 #trainDataFileName = "newData4.csv"
 #trainDataFileName = "newModData2.csv"
-#testDataFileName = "test.csv"
+testDataFileName = "test.csv"
 #testDataFileName = "test_2.csv"
-testDataFileName = "test_3.csv"
+#testDataFileName = "test_3.csv"
 trainDataPath = dataFolder + trainDataFileName
 testDataPath = dataFolder + testDataFileName
 

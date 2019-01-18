@@ -1,6 +1,8 @@
-PWD c:/Users/Alex Chang/Desktop/Statistical Learning/StatImgClass/report
+PWD c:/Users/zfmed/Desktop/Statistical Learning/StatImgClass/report
+INPUT c:/texlive/2018/texmf.cnf
+INPUT c:/texlive/2018/texmf-dist/web2c/texmf.cnf
 INPUT c:/texlive/2018/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT c:/Users/Alex Chang/Desktop/Statistical Learning/StatImgClass/report/report.tex
+INPUT c:/Users/zfmed/Desktop/Statistical Learning/StatImgClass/report/report.tex
 OUTPUT .//report.log
 INPUT c:/texlive/2018/texmf-dist/tex/latex/IEEEtran/IEEEtran.cls
 INPUT c:/texlive/2018/texmf-dist/tex/latex/IEEEtran/IEEEtran.cls

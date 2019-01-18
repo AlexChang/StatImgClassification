@@ -857,7 +857,7 @@ In this section, we present our evaluation of all of the above methods, and the 
 
 \subsection{Dataset Augmentation}
 \label{subsec:dataset_aug}
-As we mentioned in \ref{subsec:augmentation}, our best model is obtained by training on the augmented dataset. In practice, we combined the prediction results of ridge classification, logistic regression and linear discriminant analysis these three classifiers. As this process is repeated, the results are shown in Table \ref{tab:ridge_aug}.
+As we mentioned in \ref{subsec:augmentation}, our best model is obtained by training on the augmented dataset. In practice, we combined the prediction results of ridge classification, logistic regression and linear SVM these three classifiers. As this process is repeated, the results are shown in Table \ref{tab:ridge_aug}.
 
 \subsection{PCA}
 \label{subsec:eva_pca}
@@ -865,12 +865,12 @@ As we have mentioned in \ref{subsec:fa}, following the instructions given in \ci
 
 \subsection{Ridge Classification}
 \label{subsec:eva_ridge}
-In this subsection, we compare the prediction accuracy under different solvers by setting different alpha values under different preprocessing. The experiment results are drawn in Figure \ref{fig:ridge}. Basically, different solvers have little effect on prediction accuracy. In Figure \ref{fig:ridge_l1}, we performed l1 normalization on the data and the prediction accuracy reaches a maximum of 0.98795 at alpha=0.001. In Figure \ref{fig:ridge_l1}, we performed l2 normalization on the data and the prediction accuracy reaches a maximum of 0.98782 at alpha=1. In Figure \ref{fig:ridge_minmax}, we performed min-max scaling on the data and the prediction accuracy reaches a maximum of 0.98692 at alpha=100.
+In this subsection, we compare the prediction accuracy under different solvers by setting different alpha values under different preprocessing. The experiment results are drawn in Figure \ref{fig:ridge}. Basically, different solvers have little effect on prediction accuracy. In Figure \ref{fig:ridge_l1}, we performed l1 normalization on the data and the prediction accuracy reaches a maximum of 0.98795 at alpha=0.001. In Figure \ref{fig:ridge_l1}, we performed l2 normalization on the data and the prediction accuracy reaches a maximum of 0.98782 at alpha=1. In Figure \ref{fig:ridge_minmax}, we performed min-max scaling on the data and the prediction accuracy reaches a maximum of 0.98692 at alpha=100. The best performance of this model submitted to Kaggle is 0.92994 (in private leaderboard).
 
 \subsection{Logistic Regression}
 \label{subsec:eva_logreg}
 
-Fix the value of the parameter 'multi\_class' as 'ovr', we compare the performance under different solvers by setting different C under different penalty. The experiment results are drawn in Figure \ref{fig:logreg}. Set the penalty as 'l1', with C equal to 0.1, both valid solvers saga and liblinear have achieved the highest prediction accuracy of 0.98385 and 0.9841, respectively. Set the penalty as 'l2', solver newton-cg and lbfgs reach the highest prediction accuracy of 0.98513 at C=0.01.
+Fix the value of the parameter 'multi\_class' as 'ovr', we compare the performance under different solvers by setting different C under different penalty. The experiment results are drawn in Figure \ref{fig:logreg}. Set the penalty as 'l1', with C equal to 0.1, both valid solvers saga and liblinear have achieved the highest prediction accuracy of 0.98385 and 0.9841, respectively. Set the penalty as 'l2', solver newton-cg and lbfgs reach the highest prediction accuracy of 0.98513 at C=0.01. The best performance of this model submitted to Kaggle is 0.92353 (in private leaderboard).
 
 \begin{figure}[!t]
   \centering
@@ -898,8 +898,8 @@ When using LDA without performing dimensionality reduction of the original data 
 
 \subsection{SVM}
 \label{subsec:eva_svm}
-Figure \ref{fig:svm} shows the prediction accuracy of linear svc under different C when l1 and l2 are used as penalty separately. With penalty as l1, it achieves highest prediction accuracy 0.9841 when C equals to 0.01. Similarly, with penalty as l2, the highest prediction accuracy is 0.98474 when C equals to 0.01.
-
+Figure \ref{fig:svm} shows the prediction accuracy of linear svc under different C when l1 and l2 are used as penalty separately. With penalty as l1, it achieves highest prediction accuracy 0.9841 when C equals to 0.01. Similarly, with penalty as l2, the highest prediction accuracy is 0.98474 when C equals to 0.01. The best performance of this model submitted to Kaggle is 0.92847 (in private leaderboard).
+ 
 \begin{figure}[!t]
   \centering
   \begin{minipage}[t]{0.225\textwidth}
